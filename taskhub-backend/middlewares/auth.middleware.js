@@ -14,9 +14,11 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-const allowRoles = (...roles) => {
+const allowRoles = (...allowedRoles) => {
   return (req, res, next) => {
-    if (!roles.includes(req.user.role)) return res.status(403).json({ message: 'Insufficient permissions' });
+    if (!allowedRoles.includes(req.user.role)) {
+      return error(res, 'Access denied: insufficient permissions', 403);
+    }
     next();
   };
 };

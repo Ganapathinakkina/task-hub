@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const ROLES = require('../constants/roles');
 
 const userSchema = new mongoose.Schema(
   {
@@ -7,8 +8,8 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true },
     role: {
       type: String,
-      enum: ['admin', 'manager', 'employee'],
-      default: 'employee',
+      enum: [ROLES.ADMIN, ROLES.MANAGER, ROLES.EMPLOYEE],
+      default: ROLES.EMPLOYEE,
     },
   },
   { timestamps: true }
