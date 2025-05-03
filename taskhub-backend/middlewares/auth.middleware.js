@@ -5,7 +5,7 @@ const verifyToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer '))
-    return error(res, 'No token provided', 401);
+    return error(res, 'Unauthorized Access', 401, 'No token provided');
   
   const token = authHeader.split(' ')[1];
 
@@ -22,7 +22,7 @@ const verifyToken = (req, res, next) => {
 const allowRoles = (...allowedRoles) => {
   return (req, res, next) => {
     if (!allowedRoles.includes(req.user.role)) {
-      return error(res, 'Access denied: insufficient permissions', 403);
+      return error(res, 'Unauthorized Access', 401, 'Invalid or expired token');
     }
     next();
   };
