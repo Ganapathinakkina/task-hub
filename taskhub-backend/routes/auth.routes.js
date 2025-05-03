@@ -3,6 +3,8 @@ const router = express.Router();
 const { register, login } = require('../controllers/auth.controller');
 const ROLES = require('../constants/roles');
 const { verifyToken, allowRoles } = require('../middlewares/auth.middleware');
+const { success } = require('../utils/response');
+
 
 router.post('/register', register);
 router.post('/login', login);
