@@ -32,7 +32,7 @@ const getAllTasks = async (req, res) => {
     } else if (req.user.role === ROLES.MANAGER) {
       tasks = await Task.find({ createdBy: req.user.id });
     } else {
-      tasks = await Task.find(); // Admin sees all
+      tasks = await Task.find();
     }
     return success(res, 'Tasks fetched successfully', tasks);
   } catch (err) {
@@ -42,22 +42,22 @@ const getAllTasks = async (req, res) => {
 
 // -------* Get Task by ID *-------
 const getTaskById = async (req, res) => {
-  try {
+  try 
+  {
     const task = await Task.findById(req.params.id);
     if (!task) return error(res, 'Task not found', 404);
 
-    // Check if employee has permission
-    if (req.user.role === ROLES.EMPLOYEE && task.assignedTo.toString() !== req.user.id) {
+    if (req.user.role === ROLES.EMPLOYEE && (task.assignedTo!=undefined && task.assignedTo.toString()) !== req.user.id)
       return error(res, 'Access denied', 403);
-    }
 
     return success(res, 'Task fetched successfully', task);
   } catch (err) {
+    console.error(err);
     return error(res, 'Error fetching task', 500);
   }
 };
 
-// -------* Update Task (Employe can update Task status only)*-------
+// -------* Update Task (Employee can update Task status only)*-------
 const updateTask = async (req, res) => {
   try {
     const task = await Task.findById(req.params.id);
@@ -65,18 +65,19 @@ const updateTask = async (req, res) => {
 
     if (req.user.role === ROLES.EMPLOYEE) 
     {
-      if (task.assignedTo.toString() !== req.user.id)
+      if (task.assignedTo==undefined || task.assignedTo.toString() !== req.user.id)
         return error(res, 'Access denied', 403);
       
         task.status = req.body.status;
     } 
     else
-    // -------* Admin/Manager can update all fields *-------
+    // -------Admin/Manager can update all fields-------
       Object.assign(task, req.body);
 
     await task.save();
     return success(res, 'Task updated successfully', task);
   } catch (err) {
+    console.error(err);
     return error(res, 'Error updating task', 500);
   }
 };
