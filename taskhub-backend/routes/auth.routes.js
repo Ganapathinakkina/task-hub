@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { register, login } = require('../controllers/auth.controller');
 const { getAuditLogs } = require('../controllers/auditLog.controller');
-const { getEmployeeDashboard, getManagerDashboard } = require('../controllers/dashboard.controller');
+const { getEmployeeDashboard, getManagerDashboard, getAdminDashboard } = require('../controllers/dashboard.controller');
 const ROLES = require('../constants/roles');
 const { verifyToken, allowRoles } = require('../middlewares/auth.middleware');
 const taskController = require('../controllers/task.controller');
@@ -81,6 +81,12 @@ router.get('/dashboard/manager',
             verifyToken, 
             allowRoles(ROLES.MANAGER), 
             getManagerDashboard
+          );
+
+router.get('/dashboard/admin', 
+            verifyToken, 
+            allowRoles(ROLES.ADMIN), 
+            getAdminDashboard
           );
 
 // *******************************************************************************************

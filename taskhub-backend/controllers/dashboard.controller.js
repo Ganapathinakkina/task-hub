@@ -1,9 +1,11 @@
 const Task = require('../models/task.model');
+const User = require('../models/user.model');
 const { success, error } = require('../utils/response');
 const TASK_STATUS = require('../constants/taskStatus');
 const mongoose = require('mongoose');
 
 
+// ------------* Employee Dashboard data *------------
 const getEmployeeDashboard = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -49,7 +51,7 @@ const getEmployeeDashboard = async (req, res) => {
 };
 
 
-
+// ------------* Manager Dashboard data *------------
 const getManagerDashboard = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -95,5 +97,80 @@ const getManagerDashboard = async (req, res) => {
 };
 
 
+// ------------* Admin Dashboard data *------------
+const getAdminDashboard = async (req, res) => {
+  try {
+    const now = new Date();
 
-module.exports = { getEmployeeDashboard, getManagerDashboard };
+    const totalUsers = await User.countDocuments();
+    const userCountByRole = await User.aggregate([
+      { $group: { _id: '$role', count: { $sum: 1 } } }
+    ]);
+
+    const formattedUserCount = userCountByRole.reduce((acc, curr) => {
+      acc[curr._id] = curr.count;
+      return acc;
+    }, {});
+
+    const totalTasks = await Task.countDocuments();
+    const tasksByStatus = await Task.aggregate([
+      { $group: { _id: '$status', count: { $sum: 1 } } }
+    ]);
+
+    const formattedTasksByStatus = tasksByStatus.reduce((acc, curr) => {
+      acc[curr._id] = curr.count;
+      return acc;
+    }, {});
+
+    const overdueTasksCount = await Task.countDocuments({
+      dueDate: { $lt: now },
+      status: { $ne: TASK_STATUS.COMPLETED }
+    });
+
+    const totalCompletedTasks = formattedTasksByStatus[TASK_STATUS.COMPLETED] || 0;
+    const completionRate = totalTasks > 0
+      ? ((totalCompletedTasks / totalTasks) * 100).toFixed(2)
+      : "0.00";
+
+    const topPerformers = await Task.aggregate([
+      { $match: { status: TASK_STATUS.COMPLETED, assignedTo: { $ne: null } } },
+      { $group: { _id: '$assignedTo', completedCount: { $sum: 1 } } },
+      { $sort: { completedCount: -1 } },
+      { $limit: 5 },
+      {
+        $lookup: {
+          from: 'users',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'user'
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          userId: '$_id',
+          completedCount: 1,
+          name: { $arrayElemAt: ['$user.name', 0] },
+          email: { $arrayElemAt: ['$user.email', 0] },
+        }
+      }
+    ]);
+
+    return success(res, 'Admin dashboard data', {
+      totalUsers,
+      userCountByRole: formattedUserCount,
+      totalTasks,
+      tasksByStatus: formattedTasksByStatus,
+      overdueTasksCount,
+      taskCompletionRate: `${completionRate}%`,
+      topPerformers,
+    });
+  } catch (err) {
+    console.error(err);
+    return error(res, 'Failed to fetch admin dashboard data', 500);
+  }
+};
+
+
+
+module.exports = { getEmployeeDashboard, getManagerDashboard, getAdminDashboard };
