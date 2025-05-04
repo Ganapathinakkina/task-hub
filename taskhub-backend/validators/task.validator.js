@@ -12,7 +12,7 @@ const createTaskValidation = [
   body('priority')
     .isIn(allowedPriorities)
     .withMessage(`Priority must be one of: ${allowedPriorities.join(', ')}`),
-  body('assignedTo').isMongoId().withMessage('AssignedTo must be a valid user ID'),
+  body('assignedTo').optional().isMongoId().withMessage('AssignedTo must be a valid user ID'),
 ];
 
 const updateTaskValidation = [
