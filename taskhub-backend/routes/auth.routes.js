@@ -5,20 +5,66 @@ const ROLES = require('../constants/roles');
 const { verifyToken, allowRoles } = require('../middlewares/auth.middleware');
 const { success } = require('../utils/response');
 const taskController = require('../controllers/task.controller');
+const {
+  createTaskValidation,
+  updateTaskValidation,
+} = require('../validators/task.validator');
+const { registerValidation, loginValidation } = require('../validators/auth.validator');
+const validate = require('../middlewares/validate');
 
-router.post('/register', register);
-router.post('/login', login);
 
-// router.get('/protected', verifyToken, allowRoles(ROLES.ADMIN, ROLES.MANAGER), (req, res) => {
-//     return success(res, `Hello ${req.user.role}, you're authorized to access this route`);
-//   });
+// ********************************** User management APIs **********************************
+router.post('/register',
+             registerValidation,
+             validate,
+             register
+            );
 
-router.post('/task/', verifyToken, allowRoles(ROLES.ADMIN, ROLES.MANAGER), taskController.createTask);
-router.get('/task/', verifyToken, taskController.getAllTasks);
-router.get('/task/:id', verifyToken, taskController.getTaskById);
-router.put('/task/:id', verifyToken, taskController.updateTask);
-router.delete('/task/:id', verifyToken, allowRoles(ROLES.ADMIN, ROLES.MANAGER), taskController.deleteTask);
+router.post('/login',
+             loginValidation,
+             validate,
+             login
+            );
 
+
+
+// ********************************** Tasks management APIs **********************************
+
+router.post('/task/',
+            verifyToken,
+            allowRoles(ROLES.ADMIN, ROLES.MANAGER),
+            createTaskValidation,
+            validate,
+            taskController.createTask
+          );
+
+router.get('/task/',
+           verifyToken,
+           taskController.getAllTasks
+          );
+
+router.get('/task/:id', 
+            verifyToken,
+            taskController.getTaskById
+          );
+
+router.put('/task/:id', 
+            verifyToken, 
+            updateTaskValidation,
+            validate,
+            taskController.updateTask
+          );
+
+router.delete('/task/:id',
+               verifyToken, 
+               allowRoles(ROLES.ADMIN, ROLES.MANAGER), 
+               taskController.deleteTask
+              );
+
+
+
+
+// *******************************************************************************************
 
 
 module.exports = router;
