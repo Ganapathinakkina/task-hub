@@ -3,6 +3,8 @@ const { success, error } = require('../utils/response');
 const ROLES = require('../constants/roles');
 const AUDIT_ACTIONS = require('../constants/auditActions');
 const { logAudit } = require('../utils/audit.service');
+const mongoose = require('mongoose');
+const { ObjectId } = mongoose.Types;
 
 
 
@@ -42,6 +44,13 @@ const getAllTasks = async (req, res) => {
     
     const query = {};
     
+    const userId = new ObjectId(req.user.id);
+
+    if (req.user.role === ROLES.EMPLOYEE)
+      query.assignedTo = userId;
+    else if (req.user.role === ROLES.MANAGER)
+      query.createdBy = userId;
+
     if (createdBy)
       query.createdBy = createdBy;
 
@@ -56,11 +65,8 @@ const getAllTasks = async (req, res) => {
     
     if (search)
       query.$text = { $search: search };
-
-
-
-    else
-      tasks = await Task.find();
+    // else
+    //   tasks = await Task.find();
 
 
     const tasks = await Task.find(query)
@@ -85,6 +91,7 @@ const getAllTasks = async (req, res) => {
 
   }
 };
+
 
 
 // -------* Get Task by ID *-------
