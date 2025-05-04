@@ -22,4 +22,7 @@ const taskSchema = new mongoose.Schema({
   assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 }, { timestamps: true });
 
+
+taskSchema.index({ title: 'text', description: 'text' });
+
 module.exports = mongoose.model('Task', taskSchema);

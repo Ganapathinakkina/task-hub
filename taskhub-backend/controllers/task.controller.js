@@ -38,27 +38,54 @@ const createTask = async (req, res) => {
 // -------* Get All Tasks (filtered by role) *-------
 const getAllTasks = async (req, res) => {
   try {
-    let tasks;
-    if (req.user.role === ROLES.EMPLOYEE) {
-      tasks = await Task.find({ assignedTo: req.user.id });
-    } else if (req.user.role === ROLES.MANAGER) {
-      tasks = await Task.find({ createdBy: req.user.id });
-    } else {
+    const { page = 1, limit = 10, createdBy, dueDate, priority, status, search } = req.query;
+    
+    const query = {};
+    
+    if (createdBy)
+      query.createdBy = createdBy;
+
+    if (dueDate)
+      query.dueDate = dueDate;
+
+    if (priority)
+      query.priority = priority;
+
+    if (status)
+      query.status = status;
+    
+    if (search)
+      query.$text = { $search: search };
+
+
+
+    else
       tasks = await Task.find();
-    }
 
-    await logAudit({
-      userId: req.user.id,
-      action: AUDIT_ACTIONS.TASK_LISTED,
-      description: `User fetched task list`,
-      metadata: { count: tasks.length },
-    });
 
-    return success(res, 'Tasks fetched successfully', tasks);
+    const tasks = await Task.find(query)
+      .skip((page - 1) * limit)
+      .limit(Number(limit))
+      .exec();
+    
+    const totalTasks = await Task.countDocuments(query);
+    const totalPages = Math.ceil(totalTasks / limit);
+    
+
+    return success(res, 'Tasks fetched successfully', {
+      tasks,
+      totalTasks,
+      totalPages,
+      currentPage: page,
+    }, 200);
+
   } catch (err) {
-    return error(res, 'Error fetching tasks', 500);
+    console.error(err);
+    return error(res, "Something went wrong while retrieving the tasks..!!", 500, err.message);
+
   }
 };
+
 
 // -------* Get Task by ID *-------
 const getTaskById = async (req, res) => {
