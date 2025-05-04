@@ -13,11 +13,11 @@ router.post('/login', login);
 //     return success(res, `Hello ${req.user.role}, you're authorized to access this route`);
 //   });
 
-router.post('/', verifyToken, allowRoles(ROLES.ADMIN, ROLES.MANAGER), taskController.createTask);
-router.get('/', verifyToken, taskController.getAllTasks);
-router.get('/:id', verifyToken, taskController.getTaskById);
-router.put('/:id', verifyToken, taskController.updateTask);
-router.delete('/:id', verifyToken, allowRoles(ROLES.ADMIN, ROLES.MANAGER), taskController.deleteTask);
+router.post('/task/', verifyToken, allowRoles(ROLES.ADMIN, ROLES.MANAGER), taskController.createTask);
+router.get('/task/', verifyToken, taskController.getAllTasks);
+router.get('/task/:id', verifyToken, taskController.getTaskById);
+router.put('/task/:id', verifyToken, taskController.updateTask);
+router.delete('/task/:id', verifyToken, allowRoles(ROLES.ADMIN, ROLES.MANAGER), taskController.deleteTask);
 
 
 
