@@ -2,7 +2,7 @@ const User = require('../models/user.model');
 const bcrypt = require('bcryptjs');
 const { generateToken } = require('../utils/jwt');
 const { success, error } = require('../utils/response');
-const { logAudit } = require('../utils/auditLogger');
+const { logAudit } = require('../utils/audit.service');
 const AUDIT_ACTIONS = require('../constants/auditActions');
 
 
@@ -69,7 +69,7 @@ const login = async (req, res) => {
       metadata: { email }
     });
 
-    
+
     return success(res, 'Login successful', {
       token,
       user: {
