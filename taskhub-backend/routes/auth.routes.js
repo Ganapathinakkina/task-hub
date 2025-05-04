@@ -4,7 +4,6 @@ const { register, login } = require('../controllers/auth.controller');
 const { getAuditLogs } = require('../controllers/auditLog.controller');
 const ROLES = require('../constants/roles');
 const { verifyToken, allowRoles } = require('../middlewares/auth.middleware');
-const { success } = require('../utils/response');
 const taskController = require('../controllers/task.controller');
 const {
   createTaskValidation,
@@ -64,8 +63,8 @@ router.delete('/task/:id',
 
 // ********************************** Audit Logs management APIs **********************************
 router.get('/audit-logs',
-           authenticate,
-           authorizeRoles(ROLES.ADMIN, ROLES.MANAGER), 
+           verifyToken,
+           allowRoles(ROLES.ADMIN, ROLES.MANAGER), 
            getAuditLogs
           );
 
