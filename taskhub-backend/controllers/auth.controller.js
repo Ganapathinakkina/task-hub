@@ -2,6 +2,10 @@ const User = require('../models/user.model');
 const bcrypt = require('bcryptjs');
 const { generateToken } = require('../utils/jwt');
 const { success, error } = require('../utils/response');
+const { logAudit } = require('../utils/auditLogger');
+const AUDIT_ACTIONS = require('../constants/auditActions');
+
+
 
 // --------* User Registration controller method *--------
 const register = async (req, res) => {
@@ -18,6 +22,14 @@ const register = async (req, res) => {
     await user.save();
 
     const token = generateToken({ id: user._id, role: user.role });
+
+    await logAudit({
+      userId: user._id,
+      action: AUDIT_ACTIONS.USER_REGISTERED,
+      description: `${user.name} registered`,
+      metadata: { email, role }
+    });
+
 
     return success(res, 'User registered successfully', {
       token,
@@ -50,6 +62,14 @@ const login = async (req, res) => {
 
     const token = generateToken({ id: user._id, role: user.role });
 
+    await logAudit({
+      userId: user._id,
+      action: AUDIT_ACTIONS.USER_LOGGED_IN,
+      description: `${user.name} logged in`,
+      metadata: { email }
+    });
+
+    
     return success(res, 'Login successful', {
       token,
       user: {

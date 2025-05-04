@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { register, login } = require('../controllers/auth.controller');
+const { getAuditLogs } = require('../controllers/auditLog.controller');
 const ROLES = require('../constants/roles');
 const { verifyToken, allowRoles } = require('../middlewares/auth.middleware');
 const { success } = require('../utils/response');
@@ -61,6 +62,12 @@ router.delete('/task/:id',
                taskController.deleteTask
               );
 
+// ********************************** Audit Logs management APIs **********************************
+router.get('/audit-logs',
+           authenticate,
+           authorizeRoles(ROLES.ADMIN, ROLES.MANAGER), 
+           getAuditLogs
+          );
 
 
 
