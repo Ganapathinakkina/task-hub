@@ -1,10 +1,12 @@
 'use client';
 
-import { useSelector } from 'react-redux';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { cn } from '../lib/utils';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '@/app/redux/slices/authSlice';
+import { useRouter, usePathname } from 'next/navigation';
+
 
 const navItems = {
   admin: [
@@ -30,9 +32,21 @@ export default function DashboardLayout({ children }) {
   const role = user?.role || 'employee';
   const name = user?.name?.split(' ')[0] || '';
 
+  const dispatch = useDispatch();
+  const router = useRouter();
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => setIsSidebarOpen(prev => !prev);
+
+
+
+    const handleLogout = () => {
+      dispatch(logout());
+      localStorage.removeItem('taskhub-auth');
+      router.push('/');
+    };
+  
 
   return (
     <div className="flex min-h-screen bg-blue-50">
@@ -80,7 +94,7 @@ export default function DashboardLayout({ children }) {
       
 
       {/* Mobile Sidebar Toggle */}
-      <div className="md:hidden flex items-center p-4 absolute top-17 left-0 z-50">
+      <div className="md:hidden flex items-center p-4 absolute top-16 left-0 z-50">
         <button
           onClick={toggleSidebar}
           className="text-blue-600 focus:outline-none"
@@ -108,7 +122,7 @@ export default function DashboardLayout({ children }) {
 
       <aside
         className={cn(
-          'md:hidden fixed inset-0 top-17 left-0 w-64 bg-white shadow-md z-49 transform transition-all duration-300',
+          'md:hidden fixed inset-0 top-15 left-0 w-64 bg-white shadow-md z-49 transform transition-all duration-300',
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
@@ -132,13 +146,37 @@ export default function DashboardLayout({ children }) {
                 {item.label}
               </Link>
             ))}
+            <Link
+                key='/'
+                href='/'
+                className={cn(
+                  'block px-4 py-2 rounded-lg font-medium transition',
+                  pathname === '/'
+                    ? 'bg-blue-100 text-blue-800'
+                    : 'text-blue-700 hover:bg-blue-100'
+                )}
+              >
+                Home
+              </Link>
           </nav>
         </div>
 
         {/* Profile Section */}
-        <div className="p-4 border-t border-gray-200 text-sm text-blue-600">
-          Logged in as <span className="font-semibold">{name}</span>
+        <div className="p-4 border-t border-gray-200 text-sm text-blue-600 space-y-3">
+          <div>
+            Logged in as <span className="font-semibold">{name}</span>
+          </div>
+
+          <button
+            onClick={handleLogout}
+            className="w-full bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-4 py-2 rounded-md transition-all duration-200 shadow-sm hover:shadow-md"
+          >
+            Logout
+          </button>
         </div>
+
+
+        
       </aside>
 
     </div>

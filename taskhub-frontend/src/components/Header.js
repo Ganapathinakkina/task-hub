@@ -28,7 +28,7 @@ export default function Header() {
     <header className="bg-white shadow-md p-4 flex items-center justify-between">
       <h1 className="text-xl font-bold text-blue-600">TaskHub</h1>
 
-      <nav>
+      <nav className="hidden md:block">
         <ul className="flex space-x-4 items-center">
           <li>
             <a href="/" className="text-blue-600 hover:text-blue-800 font-medium">
