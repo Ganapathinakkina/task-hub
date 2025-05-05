@@ -5,5 +5,9 @@ body {
   }
   
   a {
-    @apply hover:underline cursor-pointer;
+    @apply cursor-pointer;
+  }
+
+  button{
+    @apply cursor-pointer
   }

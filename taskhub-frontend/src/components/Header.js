@@ -3,6 +3,8 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '@/app/redux/slices/authSlice';
 import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
+
 
 export default function Header() {
   const { user } = useSelector(state => state.auth);
@@ -26,12 +28,14 @@ export default function Header() {
 
   return (
     <header className="bg-white shadow-md p-4 flex items-center justify-between">
-      <h1 className="text-xl font-bold text-blue-600">TaskHub</h1>
+      <Link href="/" className="text-xl font-bold text-blue-600 hover:text-blue-800 hover:no-underline transition">
+        TaskHub
+      </Link>
 
       <nav className="hidden md:block">
         <ul className="flex space-x-4 items-center">
           <li>
-            <a href="/" className="text-blue-600 hover:text-blue-800 font-medium">
+            <a href="/" className="text-blue-600 hover:text-blue-800 hover:underline font-medium">
               Home
             </a>
           </li>
