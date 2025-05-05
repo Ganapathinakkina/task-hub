@@ -3,16 +3,24 @@
 import { useEffect, useState } from 'react';
 import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useSelector } from 'react-redux';
+
+
 
 export default function AuthPage() {
 
+    const { user } = useSelector(state => state.auth);
+    const router = useRouter();
     const searchParams = useSearchParams();
     const view = searchParams.get('view');
 
   const [isLogin, setIsLogin] = useState(true);
 
   useEffect(() => {
+    if(user)
+      router.push('/dashboard');
+
     if (view === 'register') setIsLogin(false);
     else setIsLogin(true);
   }, [view]);
