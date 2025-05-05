@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+body {
+    @apply bg-blue-50 text-gray-800;
+  }
+  
+  a {
+    @apply hover:underline cursor-pointer;
+  }
