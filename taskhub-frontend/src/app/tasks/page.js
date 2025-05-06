@@ -7,7 +7,8 @@ import ProtectedRoute from '../../components/common/ProtectedRoute';
 import DashboardLayout from '../dashboard/DashboardLayout';
 
 export default function Tasks() {
-  const { token } = useSelector(state => state.auth);
+  const { user,token } = useSelector(state => state.auth);
+  const role = user?.role || null;
 
   const [tasks, setTasks] = useState([]);
   const [filters, setFilters] = useState({
@@ -244,7 +245,11 @@ export default function Tasks() {
                     <th className="px-4 py-2">Due Date</th>
                     <th className="px-4 py-2">Priority</th>
                     <th className="px-4 py-2">Status</th>
-                    <th className="px-4 py-2">Actions</th>
+                    {
+                      role && (role === "admin" || role === "manager") && (
+                        <th className="px-4 py-2">Actions</th>
+                      )
+                    }
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 text-sm">
@@ -255,20 +260,24 @@ export default function Tasks() {
                       <td className="px-4 py-2">{new Date(task.dueDate).toLocaleDateString()}</td>
                       <td className="px-4 py-2">{task.priority}</td>
                       <td className="px-4 py-2">{task.status}</td>
-                      <td className="p-4 flex gap-3">
-                        <button
-                          onClick={() => handleEditTask(task)}
-                          className="text-white bg-yellow-300 hover:bg-yellow-400 px-5 py-1 rounded-sm"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDeleteTask(task._id)}
-                          className="text-white bg-red-500 hover:bg-red-600 px-3 py-1 rounded-md"
-                        >
-                          Delete
-                        </button>
-                      </td>
+                      {
+                        role && (role === "admin" || role === "manager") && (
+                          <td className="p-4 flex gap-3">
+                            <button
+                              onClick={() => handleEditTask(task)}
+                              className="text-white bg-yellow-300 hover:bg-yellow-400 px-5 py-1 rounded-sm"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteTask(task._id)}
+                              className="text-white bg-red-500 hover:bg-red-600 px-3 py-1 rounded-md"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        )
+                      }
                     </tr>
                   ))}
                 </tbody>
