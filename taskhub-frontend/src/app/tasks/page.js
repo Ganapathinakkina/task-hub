@@ -222,57 +222,71 @@ export default function Tasks() {
             ))}
           </div>
 
-          {/* Create Task Modal */}
           {showCreateModal && (
             <div className="fixed inset-0 bg-gray-50/10 backdrop-blur-xs flex items-center justify-center z-50">
               <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
                 <h3 className="text-blue-800 text-lg font-semibold mb-4 text-center">Create New Task</h3>
+
+                <label className="block mb-1 font-medium">Title</label>
                 <input
                   type="text"
                   name="title"
                   value={newTask.title}
                   onChange={handleNewTaskChange}
                   placeholder="Title"
-                  className="w-full p-2 mb-2 border rounded"
+                  className="w-full p-2 mb-1 border rounded"
                 />
+                <p className="text-xs text-gray-500 mb-2">Enter a brief and clear title for the task.</p>
+
+                <label className="block mb-1 font-medium">Description</label>
                 <textarea
                   name="description"
                   value={newTask.description}
                   onChange={handleNewTaskChange}
                   placeholder="Description"
-                  className="w-full p-2 mb-2 border rounded"
+                  className="w-full p-2 mb-0 border rounded"
                 />
+                <p className="text-xs text-gray-500 mb-2">Add any additional details or context for the task.</p>
+
+                <label className="block mb-1 font-medium">Due Date</label>
                 <input
                   type="date"
                   name="dueDate"
                   value={newTask.dueDate}
                   onChange={handleNewTaskChange}
-                  className="w-full p-2 mb-2 border rounded"
+                  className="w-full p-2 mb-1 border rounded"
                 />
+                <p className="text-xs text-gray-500 mb-2">Select the deadline by which this task should be completed.</p>
+
+                <label className="block mb-1 font-medium">Priority</label>
                 <select
                   name="priority"
                   value={newTask.priority}
                   onChange={handleNewTaskChange}
-                  className="w-full p-2 mb-2 border rounded"
+                  className="w-full p-2 mb-1 border rounded"
                 >
                   <option value={TASK_PRIORITY.LOW}>Low</option>
                   <option value={TASK_PRIORITY.MEDIUM}>Medium</option>
                   <option value={TASK_PRIORITY.HIGH}>High</option>
                   <option value={TASK_PRIORITY.URGENT}>URGENT</option>
                 </select>
+                <p className="text-xs text-gray-500 mb-2">Choose how important this task is.</p>
+
+                <label className="block mb-1 font-medium">Status</label>
                 <select
                   name="status"
                   value={newTask.status}
                   onChange={handleNewTaskChange}
-                  className="w-full p-2 mb-4 border rounded"
+                  className="w-full p-2 mb-2 border rounded"
                 >
                   <option value={TASK_STATUS.BACKLOG}>Backlog</option>
                   <option value={TASK_STATUS.TODO}>Todo</option>
                   <option value={TASK_STATUS.IN_PROGRESS}>In Progress</option>
                   <option value={TASK_STATUS.COMPLETED}>Completed</option>
                   <option value={TASK_STATUS.CANCELLED}>Cancelled</option>
-
                 </select>
+                <p className="text-xs text-gray-500 mb-4">Set the current progress status of the task.</p>
+
                 <div className="flex justify-end gap-2">
                   <button
                     className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
@@ -290,6 +304,7 @@ export default function Tasks() {
               </div>
             </div>
           )}
+
         </div>
       </DashboardLayout>
     </ProtectedRoute>
