@@ -46,7 +46,7 @@ const ManagerDashboard = ({ dashboardData }) => {
         <IconCard
           icon={CheckCircle}
           title="Completion Rate"
-          value={`${dashboardData.taskCompletionRate}%`}
+          value={`${dashboardData.taskCompletionRate}`}
           color="bg-green-100"
         />
       </div>
