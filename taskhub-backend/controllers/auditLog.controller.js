@@ -2,9 +2,10 @@ const AuditLog = require('../models/audit.model');
 const { success, error } = require('../utils/response');
 
 const getAuditLogs = async (req, res) => {
+
   try 
   {
-    const { userId, action, from, to, limit = 100 } = req.query;
+    const { userId, action, from, to, limit = 100, page = 1 } = req.query;
 
     const query = {};
 
@@ -16,16 +17,33 @@ const getAuditLogs = async (req, res) => {
       if (to) query.createdAt.$lte = new Date(to);
     }
 
-    const logs = await AuditLog.find(query)
-      .sort({ createdAt: -1 })
-      .limit(Number(limit))
-      .populate('userId', 'name email role');
+    const pageNum = Number(page);
+    const pageSize = Number(limit);
+    const skip = (pageNum - 1) * pageSize;
 
-    return success(res, 'Audit logs fetched successfully', logs);
+    const [logs, totalCount] = await Promise.all([
+      AuditLog.find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(pageSize)
+        .populate('userId', 'name email role'),
+      AuditLog.countDocuments(query)
+    ]);
+
+    return success(res, 'Audit logs fetched successfully', {
+      logs,
+      pagination: {
+        total: totalCount,
+        page: pageNum,
+        pageSize,
+        totalPages: Math.ceil(totalCount / pageSize),
+      }
+    });
   } catch (err) {
     console.error(err);
     return error(res, 'Failed to fetch audit logs', 500);
   }
 };
+
 
 module.exports = { getAuditLogs };
