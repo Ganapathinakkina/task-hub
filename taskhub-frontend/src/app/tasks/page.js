@@ -19,12 +19,65 @@ export default function Tasks() {
     search: '',
   });
 
+  const TASK_STATUS = {
+    BACKLOG: "Backlog",
+    TODO: "Todo",
+    IN_PROGRESS: "In Progress",
+    COMPLETED: "Completed",
+    CANCELLED: "Cancelled",
+  };
+
+  const TASK_PRIORITY = {
+    URGENT: "Urgent",
+    HIGH: "High",
+    MEDIUM: "Medium",
+    LOW: "Low",
+    NONE: "None",
+  };
+
   const [pagination, setPagination] = useState({
     totalPages: 1,
     currentPage: 1,
   });
 
   const [loading, setLoading] = useState(true);
+
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newTask, setNewTask] = useState({
+    title: '',
+    description: '',
+    dueDate: '',
+    priority: 'Low',
+    status: 'Pending',
+  });
+
+  const handleNewTaskChange = (e) => {
+    setNewTask({ ...newTask, [e.target.name]: e.target.value });
+  };
+
+  const createTask = async () => {
+    try {
+      const res = await axios.post('/auth/task', newTask, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.data.isError) {
+        setShowCreateModal(false);
+        setNewTask({
+          title: '',
+          description: '',
+          dueDate: '',
+          priority: 'Low',
+          status: 'Pending',
+        });
+        fetchTasks();
+      }
+    } catch (err) {
+      console.error('Error creating task:', err);
+    }
+  };
 
   const fetchTasks = async () => {
     setLoading(true);
@@ -76,6 +129,16 @@ export default function Tasks() {
         <div className="p-6 w-full overflow-x-hidden">
           <h2 className="text-2xl font-semibold text-blue-800 mb-6">My Tasks</h2>
 
+          {/* Create Task Button */}
+          <div className="flex justify-end mb-4">
+            <button
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+              onClick={() => setShowCreateModal(true)}
+            >
+              Create Task
+            </button>
+          </div>
+
           {/* Filters */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <input
@@ -88,15 +151,18 @@ export default function Tasks() {
             />
             <select name="status" value={filters.status} onChange={handleChange} className="p-2 border rounded-md w-full">
               <option value="">All Status</option>
-              <option value="Completed">Completed</option>
-              <option value="Pending">Pending</option>
-              <option value="Overdue">Overdue</option>
+              <option value={TASK_STATUS.BACKLOG}>Backlog</option>
+              <option value={TASK_STATUS.TODO}>Todo</option>
+              <option value={TASK_STATUS.IN_PROGRESS}>In Progress</option>
+              <option value={TASK_STATUS.COMPLETED}>Completed</option>
+              <option value={TASK_STATUS.CANCELLED}>Cancelled</option>
             </select>
             <select name="priority" value={filters.priority} onChange={handleChange} className="p-2 border rounded-md w-full">
               <option value="">All Priority</option>
-              <option value="Low">Low</option>
-              <option value="Medium">Medium</option>
-              <option value="High">High</option>
+              <option value={TASK_PRIORITY.LOW}>Low</option>
+              <option value={TASK_PRIORITY.MEDIUM}>Medium</option>
+              <option value={TASK_PRIORITY.HIGH}>High</option>
+              <option value={TASK_PRIORITY.URGENT}>URGENT</option>
             </select>
             <input
               type="date"
@@ -155,6 +221,75 @@ export default function Tasks() {
               </button>
             ))}
           </div>
+
+          {/* Create Task Modal */}
+          {showCreateModal && (
+            <div className="fixed inset-0 bg-gray-50/10 backdrop-blur-xs flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+                <h3 className="text-blue-800 text-lg font-semibold mb-4 text-center">Create New Task</h3>
+                <input
+                  type="text"
+                  name="title"
+                  value={newTask.title}
+                  onChange={handleNewTaskChange}
+                  placeholder="Title"
+                  className="w-full p-2 mb-2 border rounded"
+                />
+                <textarea
+                  name="description"
+                  value={newTask.description}
+                  onChange={handleNewTaskChange}
+                  placeholder="Description"
+                  className="w-full p-2 mb-2 border rounded"
+                />
+                <input
+                  type="date"
+                  name="dueDate"
+                  value={newTask.dueDate}
+                  onChange={handleNewTaskChange}
+                  className="w-full p-2 mb-2 border rounded"
+                />
+                <select
+                  name="priority"
+                  value={newTask.priority}
+                  onChange={handleNewTaskChange}
+                  className="w-full p-2 mb-2 border rounded"
+                >
+                  <option value={TASK_PRIORITY.LOW}>Low</option>
+                  <option value={TASK_PRIORITY.MEDIUM}>Medium</option>
+                  <option value={TASK_PRIORITY.HIGH}>High</option>
+                  <option value={TASK_PRIORITY.URGENT}>URGENT</option>
+                </select>
+                <select
+                  name="status"
+                  value={newTask.status}
+                  onChange={handleNewTaskChange}
+                  className="w-full p-2 mb-4 border rounded"
+                >
+                  <option value={TASK_STATUS.BACKLOG}>Backlog</option>
+                  <option value={TASK_STATUS.TODO}>Todo</option>
+                  <option value={TASK_STATUS.IN_PROGRESS}>In Progress</option>
+                  <option value={TASK_STATUS.COMPLETED}>Completed</option>
+                  <option value={TASK_STATUS.CANCELLED}>Cancelled</option>
+
+                </select>
+                <div className="flex justify-end gap-2">
+                  <button
+                    className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                    onClick={() => setShowCreateModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    onClick={createTask}
+                  >
+                    Create
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </DashboardLayout>
     </ProtectedRoute>
