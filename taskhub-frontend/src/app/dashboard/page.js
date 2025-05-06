@@ -61,13 +61,13 @@ export default function Dashboard() {
     <ProtectedRoute>
       <DashboardLayout>
         <div className="p-6">
-          <h2 className="text-2xl font-semibold text-blue-800 mb-6">Employee Dashboard</h2>
-
           {loading ? (
             <div className="text-blue-600 animate-pulse">Loading analytics...</div>
           ) : (dashboardData && role) ? (
               role === "employee" ? (
                 <>
+                  <h2 className="text-2xl font-semibold text-blue-800 mb-6">Employee Dashboard</h2>
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <Card title="Assigned Tasks" value={dashboardData.assignedTasksCount} color="bg-blue-100" />
                     <Card title="Completed Tasks" value={dashboardData.completedTasksCount} color="bg-green-100" />
@@ -94,43 +94,47 @@ export default function Dashboard() {
               (
                 role === "manager" ? (
                   <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <Card title="Total Tasks Created" value={dashboardData.totalTasksCreated} color="bg-blue-100" />
-                    <Card title="Assigned Tasks" value={dashboardData.assignedTasksCount} color="bg-yellow-100" />
-                    <Card title="Overdue Tasks" value={dashboardData.overdueTasksCount} color="bg-red-100" />
-                    <Card title="Completion Rate" value={dashboardData.taskCompletionRate} color="bg-green-100" />
-                  </div>
-              
-                  <div className="mt-10">
-                    <h3 className="text-lg font-medium text-blue-700 mb-4">Task Summary by Employee</h3>
-                    {Object.keys(dashboardData.taskSummaryByEmployee).length === 0 ? (
-                      <p className="text-gray-500">No task summary available.</p>
-                    ) : (
-                      <table className="min-w-full bg-white border rounded-lg shadow-sm">
-                        <thead className="bg-blue-100">
-                          <tr>
-                            <th className="text-left px-4 py-2 text-sm font-semibold text-blue-800">Employee</th>
-                            <th className="text-left px-4 py-2 text-sm font-semibold text-blue-800">Assigned</th>
-                            <th className="text-left px-4 py-2 text-sm font-semibold text-blue-800">Completed</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {Object.entries(dashboardData.taskSummaryByEmployee).map(([employee, stats], idx) => (
-                            <tr key={idx} className="border-t">
-                              <td className="px-4 py-2 text-gray-700">{employee}</td>
-                              <td className="px-4 py-2 text-gray-700">{stats.assigned}</td>
-                              <td className="px-4 py-2 text-gray-700">{stats.completed}</td>
+                    <h2 className="text-2xl font-semibold text-blue-800 mb-6">Manager Dashboard</h2>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      <Card title="Total Tasks Created" value={dashboardData.totalTasksCreated} color="bg-blue-100" />
+                      <Card title="Assigned Tasks" value={dashboardData.assignedTasksCount} color="bg-yellow-100" />
+                      <Card title="Overdue Tasks" value={dashboardData.overdueTasksCount} color="bg-red-100" />
+                      <Card title="Completion Rate" value={dashboardData.taskCompletionRate} color="bg-green-100" />
+                    </div>
+                
+                    <div className="mt-10">
+                      <h3 className="text-lg font-medium text-blue-700 mb-4">Task Summary by Employee</h3>
+                      {Object.keys(dashboardData.taskSummaryByEmployee).length === 0 ? (
+                        <p className="text-gray-500">No task summary available.</p>
+                      ) : (
+                        <table className="min-w-full bg-white border rounded-lg shadow-sm">
+                          <thead className="bg-blue-100">
+                            <tr>
+                              <th className="text-left px-4 py-2 text-sm font-semibold text-blue-800">Employee</th>
+                              <th className="text-left px-4 py-2 text-sm font-semibold text-blue-800">Assigned</th>
+                              <th className="text-left px-4 py-2 text-sm font-semibold text-blue-800">Completed</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    )}
-                  </div>
-                </>
+                          </thead>
+                          <tbody>
+                            {Object.entries(dashboardData.taskSummaryByEmployee).map(([employee, stats], idx) => (
+                              <tr key={idx} className="border-t">
+                                <td className="px-4 py-2 text-gray-700">{employee}</td>
+                                <td className="px-4 py-2 text-gray-700">{stats.assigned}</td>
+                                <td className="px-4 py-2 text-gray-700">{stats.completed}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      )}
+                    </div>
+                  </>
                 )
                 :
                 (
                   <>
+                    <h2 className="text-2xl font-semibold text-blue-800 mb-6">Admin Dashboard</h2>
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                       <Card title="Assigned Tasks" value={dashboardData.assignedTasksCount} color="bg-blue-100" />
                       <Card title="Completed Tasks" value={dashboardData.completedTasksCount} color="bg-green-100" />
