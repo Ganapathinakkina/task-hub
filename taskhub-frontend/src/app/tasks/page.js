@@ -123,6 +123,62 @@ export default function Tasks() {
     setFilters({ ...filters, page: newPage });
   };
 
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editableTask, setEditableTask] = useState(null);
+
+  const handleEditTask = (task) => {
+    setEditableTask({ ...task });
+    setShowEditModal(true);
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditableTask((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const updateTask = async () => {
+    setTasks((prevTasks) =>
+      prevTasks.map((t) => (t._id === editableTask._id ? editableTask : t))
+    );
+
+    try {
+      const res = await axios.put(
+        `/auth/task/${editableTask._id}`,
+        editableTask,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      if (!res.data.isError) {
+        setShowEditModal(false);
+      }
+    } catch (err) {
+      console.error('Error creating task:', err);
+    }
+
+  };
+
+  const handleDeleteTask = async (taskId) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this task?");
+    if (confirmDelete) {
+      setTasks((prevTasks) => prevTasks.filter((task) => task._id !== taskId));
+
+      const res = await axios.delete(
+        `/auth/task/${taskId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+    }
+  };
+  
+
   return (
     <ProtectedRoute>
       <DashboardLayout>
@@ -188,6 +244,7 @@ export default function Tasks() {
                     <th className="px-4 py-2">Due Date</th>
                     <th className="px-4 py-2">Priority</th>
                     <th className="px-4 py-2">Status</th>
+                    <th className="px-4 py-2">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 text-sm">
@@ -198,6 +255,20 @@ export default function Tasks() {
                       <td className="px-4 py-2">{new Date(task.dueDate).toLocaleDateString()}</td>
                       <td className="px-4 py-2">{task.priority}</td>
                       <td className="px-4 py-2">{task.status}</td>
+                      <td className="p-4 flex gap-3">
+                        <button
+                          onClick={() => handleEditTask(task)}
+                          className="text-white bg-yellow-300 hover:bg-yellow-400 px-5 py-1 rounded-sm"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteTask(task._id)}
+                          className="text-white bg-red-500 hover:bg-red-600 px-3 py-1 rounded-md"
+                        >
+                          Delete
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -299,6 +370,72 @@ export default function Tasks() {
                     onClick={createTask}
                   >
                     Create
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+
+          { showEditModal && editableTask && (
+            <div className="fixed inset-0 bg-gray-50/10 backdrop-blur-xs flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+                <h3 className="text-blue-800 text-lg font-semibold mb-4 text-center">Edit Task</h3>
+                <input
+                  type="text"
+                  name="title"
+                  value={editableTask.title}
+                  onChange={handleEditChange}
+                  className="w-full p-2 mb-2 border rounded"
+                />
+                <textarea
+                  name="description"
+                  value={editableTask.description}
+                  onChange={handleEditChange}
+                  className="w-full p-2 mb-2 border rounded"
+                />
+                <input
+                  type="date"
+                  name="dueDate"
+                  value={editableTask.dueDate}
+                  onChange={handleEditChange}
+                  className="w-full p-2 mb-2 border rounded"
+                />
+                <select
+                  name="priority"
+                  value={editableTask.priority}
+                  onChange={handleEditChange}
+                  className="w-full p-2 mb-2 border rounded"
+                >
+                  <option value={TASK_PRIORITY.LOW}>Low</option>
+                  <option value={TASK_PRIORITY.MEDIUM}>Medium</option>
+                  <option value={TASK_PRIORITY.HIGH}>High</option>
+                  <option value={TASK_PRIORITY.URGENT}>URGENT</option>
+                </select>
+                <select
+                  name="status"
+                  value={editableTask.status}
+                  onChange={handleEditChange}
+                  className="w-full p-2 mb-4 border rounded"
+                >
+                  <option value={TASK_STATUS.BACKLOG}>Backlog</option>
+                  <option value={TASK_STATUS.TODO}>Todo</option>
+                  <option value={TASK_STATUS.IN_PROGRESS}>In Progress</option>
+                  <option value={TASK_STATUS.COMPLETED}>Completed</option>
+                  <option value={TASK_STATUS.CANCELLED}>Cancelled</option>
+                </select>
+                <div className="flex justify-end gap-2">
+                  <button
+                    className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                    onClick={() => setShowEditModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800"
+                    onClick={updateTask}
+                  >
+                    Save Changes
                   </button>
                 </div>
               </div>
