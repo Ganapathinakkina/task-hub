@@ -178,6 +178,31 @@ export default function Tasks() {
 
     }
   };
+
+
+
+  const handleStatusChange = async (taskId, newStatus) => {
+    try {
+      await axios.put(
+        `/auth/task/${taskId}`,
+        { status: newStatus },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      setTasks((prev) =>
+        prev.map((task) =>
+          task._id === taskId ? { ...task, status: newStatus } : task
+        )
+      );
+    } catch (err) {
+      console.error('Error updating status:', err);
+    }
+  };
+  
   
 
   return (
@@ -259,7 +284,23 @@ export default function Tasks() {
                       <td className="px-4 py-2">{task.description}</td>
                       <td className="px-4 py-2">{new Date(task.dueDate).toLocaleDateString()}</td>
                       <td className="px-4 py-2">{task.priority}</td>
-                      <td className="px-4 py-2">{task.status}</td>
+                      <td className="px-4 py-2">
+                        {role === "employee" ? (
+                          <select
+                            value={task.status}
+                            onChange={(e) => handleStatusChange(task._id, e.target.value)}
+                            className="border-2 border-blue-500 rounded px-2 py-1"
+                          >
+                            <option value={TASK_STATUS.BACKLOG} className="text-gray-600 font-bold">Backlog</option>
+                            <option value={TASK_STATUS.TODO} className="text-blue-500 font-bold">Todo</option>
+                            <option value={TASK_STATUS.IN_PROGRESS} className="text-yellow-600 font-bold">In Progress</option>
+                            <option value={TASK_STATUS.COMPLETED} className="text-green-600 font-bold">Completed</option>
+                            <option value={TASK_STATUS.CANCELLED} className="text-red-500 font-bold">Cancelled</option>
+                          </select>
+                        ) : (
+                          task.status
+                        )}
+                      </td>
                       {
                         role && (role === "admin" || role === "manager") && (
                           <td className="p-4 flex gap-3">
