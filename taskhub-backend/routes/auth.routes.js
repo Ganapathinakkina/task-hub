@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { register, login } = require('../controllers/auth.controller');
+const { register, login, getAllUsers } = require('../controllers/auth.controller');
 const { getAuditLogs } = require('../controllers/auditLog.controller');
 const { getEmployeeDashboard, getManagerDashboard, getAdminDashboard } = require('../controllers/dashboard.controller');
 const ROLES = require('../constants/roles');
@@ -25,6 +25,12 @@ router.post('/login',
              loginValidation,
              validate,
              login
+            );
+
+router.get('/users',
+             verifyToken,
+             allowRoles(ROLES.ADMIN, ROLES.MANAGER),
+             getAllUsers
             );
 
 

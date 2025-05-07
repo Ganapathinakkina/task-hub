@@ -4,6 +4,7 @@ const { generateToken } = require('../utils/jwt');
 const { success, error } = require('../utils/response');
 const { logAudit } = require('../utils/audit.service');
 const AUDIT_ACTIONS = require('../constants/auditActions');
+const ROLES = require('../constants/roles');
 
 
 
@@ -84,4 +85,53 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { register, login };
+
+// -------* Get All Users (filtered by role) *-------
+const getAllUsers = async (req, res) => {
+  try {
+    const { page = 1, limit = 10, role, search } = req.query;
+
+    const query = {};
+
+    if (req.user.role === ROLES.ADMIN)
+      query.role = { $ne: ROLES.ADMIN };
+    else if (req.user.role === ROLES.MANAGER)
+      query.role = ROLES.EMPLOYEE;
+
+    if (role && role !== ROLES.ADMIN && req.user.role === ROLES.ADMIN && req.user.role !== ROLES.MANAGER)
+      query.role = role;
+
+    if (search) {
+      const regex = new RegExp(search, 'i');
+      query.$or = [
+        { name: regex },
+        { email: regex },
+      ];
+    }
+
+    const skip = (page - 1) * limit;
+
+    const users = await User.find(query)
+      .select('-password')
+      .skip(skip)
+      .limit(Number(limit))
+      .exec();
+
+    const totalUsers = await User.countDocuments(query);
+    const totalPages = Math.ceil(totalUsers / limit);
+
+    return success(res, 'Users fetched successfully', {
+      users,
+      totalUsers,
+      totalPages,
+      currentPage: page,
+    }, 200);
+
+  } catch (err) {
+    console.error(err);
+    return error(res, 'Something went wrong while fetching users', 500, err.message);
+  }
+};
+
+
+module.exports = { register, login, getAllUsers };
