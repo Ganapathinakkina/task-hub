@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 const IconCard = ({ icon: Icon, title, value, color }) => (
-  <div className={`p-4 rounded-xl shadow-md ${color} text-gray-800`}>
+  <div className={`rounded-xl shadow-md p-6 ${color} border border-gray-200 hover:shadow-xl transition-shadow duration-300 flex items-center space-x-4`}>
     <div className="flex items-center space-x-4">
       <Icon className="w-8 h-8" />
       <div>
