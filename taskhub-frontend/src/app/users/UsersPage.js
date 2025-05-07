@@ -100,7 +100,7 @@ export default function UsersPage({ taskId = null, isPopup=true, setShowAssignMo
     <>
         <div className="p-6">
           {
-            role === 'admin' ? (
+            (role === 'admin' && !isPopup) ? (
               <h1 className="text-2xl font-semibold text-blue-800 mb-6">Manage Users</h1>
             )
             : (
@@ -119,7 +119,7 @@ export default function UsersPage({ taskId = null, isPopup=true, setShowAssignMo
                     className="px-6 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
 
-                {role === 'admin' && (
+                {(role === 'admin' && !isPopup) && (
                     <select
                     name="userRoleFilter"
                     value={userRoleFilter}
