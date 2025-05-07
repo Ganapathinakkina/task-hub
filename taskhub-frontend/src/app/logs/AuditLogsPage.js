@@ -98,27 +98,27 @@ const AuditLogsPage = () => {
         </button>
       </div>
 
-      <div className="overflow-x-auto shadow rounded-lg">
-        <table className="min-w-full bg-white border border-gray-200 text-sm">
-          <thead className="bg-gray-100 text-left">
+      <div className="overflow-x-auto bg-white rounded-lg shadow-md">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-100 text-gray-700 text-left">
             <tr>
-              <th className="p-3 border-b">User</th>
-              <th className="p-3 border-b">Email</th>
-              <th className="p-3 border-b">Role</th>
-              <th className="p-3 border-b">Action</th>
-              <th className="p-3 border-b">Description</th>
-              <th className="p-3 border-b">Date</th>
+              <th className="px-4 py-2">User</th>
+              <th className="px-4 py-2">Email</th>
+              <th className="px-4 py-2">Role</th>
+              <th className="px-4 py-2">Action</th>
+              <th className="px-4 py-2">Description</th>
+              <th className="px-4 py-2">Date</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-200 text-sm">
             {logs.length > 0 ? logs.map((log) => (
-              <tr key={log._id} className="hover:bg-gray-50">
-                <td className="p-3 border-b">{log.userId?.name || 'N/A'}</td>
-                <td className="p-3 border-b">{log.userId?.email || 'N/A'}</td>
-                <td className="p-3 border-b">{log.userId?.role || 'N/A'}</td>
-                <td className="p-3 border-b">{log.action}</td>
-                <td className="p-3 border-b">{log.description}</td>
-                <td className="p-3 border-b">{new Date(log.createdAt).toLocaleString()}</td>
+              <tr key={log._id} className="hover:bg-gray-50 transition">
+                <td className="px-4 py-2">{log.userId?.name || 'N/A'}</td>
+                <td className="px-4 py-2">{log.userId?.email || 'N/A'}</td>
+                <td className="px-4 py-2">{log.userId?.role || 'N/A'}</td>
+                <td className="px-4 py-2">{log.action}</td>
+                <td className="px-4 py-2">{log.description}</td>
+                <td className="px-4 py-2">{new Date(log.createdAt).toLocaleString()}</td>
               </tr>
             )) : (
               <tr>

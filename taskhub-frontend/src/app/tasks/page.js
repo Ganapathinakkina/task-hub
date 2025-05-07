@@ -209,7 +209,14 @@ export default function Tasks() {
     <ProtectedRoute>
       <DashboardLayout>
         <div className="p-6 w-full overflow-x-hidden">
-          <h2 className="text-2xl font-semibold text-blue-800 mb-6">My Tasks</h2>
+          {
+            (role && (role === "admin" || role === "manager")) ? (
+              <h1 className="text-2xl font-semibold text-blue-800 mb-6">Task Management</h1>
+            )
+            : (
+              <h1 className="text-2xl font-semibold text-blue-800 mb-6">My Tasks</h1>
+            )
+          }
 
           {/* Create Task Button */}
           <div className="flex justify-end mb-4">
