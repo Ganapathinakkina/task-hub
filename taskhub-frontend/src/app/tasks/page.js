@@ -5,12 +5,16 @@ import { useSelector } from 'react-redux';
 import axios from '../lib/axios';
 import ProtectedRoute from '../../components/common/ProtectedRoute';
 import DashboardLayout from '../dashboard/DashboardLayout';
+import UsersPage from '../users/UsersPage';
 
 export default function Tasks() {
   const { user,token } = useSelector(state => state.auth);
   const role = user?.role || null;
 
   const [tasks, setTasks] = useState([]);
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [selectedTaskId, setSelectedTaskId] = useState(null);
+
   const [filters, setFilters] = useState({
     page: 1,
     limit: 10,
@@ -202,6 +206,7 @@ export default function Tasks() {
       console.error('Error updating status:', err);
     }
   };
+
   
   
 
@@ -322,6 +327,15 @@ export default function Tasks() {
                               className="text-white bg-red-500 hover:bg-red-600 px-3 py-1 rounded-md"
                             >
                               Delete
+                            </button>
+                            <button
+                              onClick={() => {
+                                setSelectedTaskId(task._id);
+                                setShowAssignModal(true);
+                              }}
+                              className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
+                            >
+                              Assign Task
                             </button>
                           </td>
                         )
@@ -496,6 +510,15 @@ export default function Tasks() {
                   </button>
                 </div>
               </div>
+            </div>
+          )}
+
+
+          {showAssignModal && (
+            <div className="fixed inset-0 bg-gray-50/10 backdrop-blur-xs bg-opacity-50 flex items-center justify-center z-50"
+              onClick={() => setShowAssignModal(false)}>
+              <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-2xl">
+              <UsersPage taskId={selectedTaskId} isPopup={showAssignModal} setShowAssignModal={setShowAssignModal} />              </div>
             </div>
           )}
 
