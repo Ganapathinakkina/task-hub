@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
-import { loginSuccess } from '@/app/redux/slices/authSlice';
+import { loginSuccess, logout } from '@/app/redux/slices/authSlice';
 import { useRouter } from 'next/navigation';
 import { showAlert } from '../redux/slices/alertSlice';
 
@@ -76,10 +76,21 @@ export default function RegisterForm() {
 
       router.push('/dashboard');
     } catch (err) {
-      dispatch(showAlert({
-        message: 'Something went wrong. please try again.',
-        isError: true,
-      }));
+      if (err.response?.status === 401) 
+      {
+        dispatch(showAlert({
+          message: 'Session expired. Please log in again.',
+          isError: true,
+        }));
+        dispatch(logout());
+      } 
+      else
+      {
+        dispatch(showAlert({
+          message: 'Something went wrong. please try again.',
+          isError: true,
+        }));
+      }
     } finally {
       setLoading(false);
     }

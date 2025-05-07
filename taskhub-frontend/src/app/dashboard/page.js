@@ -9,6 +9,7 @@ import AdminDashboard from './AdminDashboard';
 import ManagerDashboard from './ManagerDashboard';
 import EmployeeDashboard from './EmployeeDashboard';
 import { showAlert } from '../redux/slices/alertSlice';
+import { logout } from '../redux/slices/authSlice';
 
 export default function Dashboard() {
   const dispatch = useDispatch();
@@ -57,10 +58,21 @@ export default function Dashboard() {
 
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
-      dispatch(showAlert({
-        message: 'Something went wrong. please try again.',
-        isError: true,
-      }));
+      if (error.response?.status === 401) 
+      {
+        dispatch(showAlert({
+          message: 'Session expired. Please log in again.',
+          isError: true,
+        }));
+        dispatch(logout());
+      } 
+      else
+      {
+        dispatch(showAlert({
+          message: 'Something went wrong. please try again.',
+          isError: true,
+        }));
+      }
     }
     finally {
         setLoading(false);

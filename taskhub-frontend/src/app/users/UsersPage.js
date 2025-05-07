@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from '../lib/axios';
 import { showAlert } from '../redux/slices/alertSlice';
+import { logout } from '../redux/slices/authSlice';
 
 export default function UsersPage({ taskId = null, isPopup=true, setShowAssignModal = () => {} }) {
 
@@ -54,10 +55,21 @@ export default function UsersPage({ taskId = null, isPopup=true, setShowAssignMo
       }
     } catch (err) {
       console.error('Error fetching users:', err);
-      dispatch(showAlert({
-        message: 'Something went wrong. please try again.',
-        isError: true,
-      }));
+      if (err.response?.status === 401) 
+      {
+        dispatch(showAlert({
+          message: 'Session expired. Please log in again.',
+          isError: true,
+        }));
+        dispatch(logout());
+      } 
+      else
+      {
+        dispatch(showAlert({
+          message: 'Something went wrong. please try again.',
+          isError: true,
+        }));
+      }
     } finally {
       setLoading(false);
     }
@@ -101,10 +113,21 @@ export default function UsersPage({ taskId = null, isPopup=true, setShowAssignMo
       }
     } catch (err) {
       console.error('Error While Assigning task:', err);
-      dispatch(showAlert({
-        message: 'Something went wrong. please try again.',
-        isError: true,
-      }));
+      if (err.response?.status === 401) 
+      {
+        dispatch(showAlert({
+          message: 'Session expired. Please log in again.',
+          isError: true,
+        }));
+        dispatch(logout());
+      } 
+      else
+      {
+        dispatch(showAlert({
+          message: 'Something went wrong. please try again.',
+          isError: true,
+        }));
+      }
     }
 
   };

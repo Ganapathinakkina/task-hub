@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import API from '../lib/axios';
 import { showAlert } from '../redux/slices/alertSlice';
+import { logout } from '../redux/slices/authSlice';
 
 const AUDIT_ACTIONS = {
   TASK_CREATED: 'TASK_CREATED',
@@ -61,10 +62,21 @@ const AuditLogsPage = () => {
       
     } catch (err) {
       console.error('Failed to fetch audit logs:', err);
-      dispatch(showAlert({
-        message: 'Something went wrong. please try again.',
-        isError: true,
-      }));
+      if (err.response?.status === 401) 
+      {
+        dispatch(showAlert({
+          message: 'Session expired. Please log in again.',
+          isError: true,
+        }));
+        dispatch(logout());
+      } 
+      else
+      {
+        dispatch(showAlert({
+          message: 'Something went wrong. please try again.',
+          isError: true,
+        }));
+      }
     }
   };
 

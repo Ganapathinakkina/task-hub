@@ -7,6 +7,7 @@ import ProtectedRoute from '../../components/common/ProtectedRoute';
 import DashboardLayout from '../dashboard/DashboardLayout';
 import UsersPage from '../users/UsersPage';
 import { showAlert } from '../redux/slices/alertSlice';
+import { logout } from '../redux/slices/authSlice';
 
 export default function Tasks() {
 
@@ -89,10 +90,21 @@ export default function Tasks() {
       }
     } catch (err) {
       console.error('Error creating task:', err);
-      dispatch(showAlert({
-        message: 'Something went wrong. please try again.',
-        isError: true,
-      }));
+      if (err.response?.status === 401) 
+      {
+        dispatch(showAlert({
+          message: 'Session expired. Please log in again.',
+          isError: true,
+        }));
+        dispatch(logout());
+      } 
+      else
+      {
+        dispatch(showAlert({
+          message: 'Something went wrong. please try again.',
+          isError: true,
+        }));
+      }
     }
   };
 
@@ -129,10 +141,21 @@ export default function Tasks() {
       }
     } catch (err) {
       console.error('Failed to fetch tasks:', err);
-      dispatch(showAlert({
-        message: 'Something went wrong. please try again.',
-        isError: true,
-      }));
+      if (err.response?.status === 401) 
+      {
+        dispatch(showAlert({
+          message: 'Session expired. Please log in again.',
+          isError: true,
+        }));
+        dispatch(logout());
+      } 
+      else
+      {
+        dispatch(showAlert({
+          message: 'Something went wrong. please try again.',
+          isError: true,
+        }));
+      }
     } finally {
       setLoading(false);
     }
@@ -189,10 +212,21 @@ export default function Tasks() {
       }
     } catch (err) {
       console.error('Error creating task:', err);
-      dispatch(showAlert({
-        message: 'Something went wrong. please try again.',
-        isError: true,
-      }));
+      if (err.response?.status === 401) 
+      {
+        dispatch(showAlert({
+          message: 'Session expired. Please log in again.',
+          isError: true,
+        }));
+        dispatch(logout());
+      } 
+      else
+      {
+        dispatch(showAlert({
+          message: 'Something went wrong. please try again.',
+          isError: true,
+        }));
+      }
     }
 
   };
@@ -221,10 +255,21 @@ export default function Tasks() {
       }
       catch (err) {
         console.error('Error deleting task:', err);
-        dispatch(showAlert({
-          message: 'Something went wrong. please try again.',
-          isError: true,
-        }));
+        if (err.response?.status === 401) 
+        {
+          dispatch(showAlert({
+            message: 'Session expired. Please log in again.',
+            isError: true,
+          }));
+          dispatch(logout());
+        } 
+        else
+        {
+          dispatch(showAlert({
+            message: 'Something went wrong. please try again.',
+            isError: true,
+          }));
+        }
       }
 
 
@@ -259,10 +304,21 @@ export default function Tasks() {
       );
     } catch (err) {
       console.error('Error updating status:', err);
-      dispatch(showAlert({
-        message: 'Something went wrong. please try again.',
-        isError: true,
-      }));
+      if (err.response?.status === 401) 
+      {
+        dispatch(showAlert({
+          message: 'Session expired. Please log in again.',
+          isError: true,
+        }));
+        dispatch(logout());
+      } 
+      else
+      {
+        dispatch(showAlert({
+          message: 'Something went wrong. please try again.',
+          isError: true,
+        }));
+      }
     }
   };
 
