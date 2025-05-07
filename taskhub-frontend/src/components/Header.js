@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '@/app/redux/slices/authSlice';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { showAlert } from '@/app/redux/slices/alertSlice';
 
 
 export default function Header() {
@@ -14,8 +15,10 @@ export default function Header() {
 
   const handleLogout = () => {
     dispatch(logout());
-    localStorage.removeItem('taskhub-auth');
-    router.push('/');
+    dispatch(showAlert({
+      message: 'Logged out successfully.',
+      isError: false,
+    }));
   };
 
   const handleAuthNavigation = (view) => {

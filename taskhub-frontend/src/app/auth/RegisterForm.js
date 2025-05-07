@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '@/app/redux/slices/authSlice';
 import { useRouter } from 'next/navigation';
+import { showAlert } from '../redux/slices/alertSlice';
 
 export default function RegisterForm() {
   const dispatch = useDispatch();
@@ -19,8 +20,6 @@ export default function RegisterForm() {
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
-  const [serverError, setServerError] = useState('');
-
 
   const validate = () => {
     const errs = {};
@@ -55,7 +54,6 @@ export default function RegisterForm() {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    setServerError('');
     const validationErrors = validate();
 
     if (Object.keys(validationErrors).length > 0) {
@@ -69,11 +67,19 @@ export default function RegisterForm() {
       const { token, user } = res.data.data;
 
       dispatch(loginSuccess({ user, token }));
+      dispatch(showAlert({
+        message: res.data.message,
+        isError: res.data.isError,
+      }));
+
       localStorage.setItem('taskhub-auth', JSON.stringify({ user, token }));
 
       router.push('/dashboard');
     } catch (err) {
-      setServerError(err.response?.data?.message || 'Registration failed');
+      dispatch(showAlert({
+        message: 'Something went wrong. please try again.',
+        isError: true,
+      }));
     } finally {
       setLoading(false);
     }
@@ -81,7 +87,6 @@ export default function RegisterForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {serverError && <p className="text-red-600">{serverError}</p>}
 
       <div>
         <input

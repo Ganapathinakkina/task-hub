@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import API from '../lib/axios';
+import { showAlert } from '../redux/slices/alertSlice';
 
 const AUDIT_ACTIONS = {
   TASK_CREATED: 'TASK_CREATED',
@@ -19,6 +20,7 @@ const PAGE_SIZE = 10;
 
 const AuditLogsPage = () => {
 
+  const dispatch = useDispatch();
   const { token } = useSelector(state => state.auth);
 
   const [logs, setLogs] = useState([]);
@@ -49,11 +51,20 @@ const AuditLogsPage = () => {
         },
       });
       
+      dispatch(showAlert({
+        message: response.data.message,
+        isError: response.data.isError,
+      }));
+
       setLogs(response.data.data.logs);
       setTotalPages(response.data.data.pagination.totalPages);
       
     } catch (err) {
       console.error('Failed to fetch audit logs:', err);
+      dispatch(showAlert({
+        message: 'Something went wrong. please try again.',
+        isError: true,
+      }));
     }
   };
 

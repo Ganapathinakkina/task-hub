@@ -5,11 +5,11 @@ import axios from '../lib/axios';
 import { useRouter } from 'next/navigation';
 import { loginSuccess } from '../redux/slices/authSlice';
 import { useDispatch } from 'react-redux';
+import { showAlert } from '../redux/slices/alertSlice';
 
 export default function LoginForm() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({});
-  const [serverError, setServerError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
@@ -38,12 +38,10 @@ export default function LoginForm() {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrors((prev) => ({ ...prev, [e.target.name]: '' }));
-    setServerError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setServerError('');
     const validationErrors = validate();
 
     if (Object.keys(validationErrors).length > 0) {
@@ -57,12 +55,21 @@ export default function LoginForm() {
       const { token, user } = res.data.data;
 
       dispatch(loginSuccess({ user, token }));
+      dispatch(showAlert({
+        message: res.data.message,
+        isError: res.data.isError,
+      }));
+
       localStorage.setItem('taskhub-auth', JSON.stringify({ user, token }));
 
       router.push('/dashboard');
+      
     } catch (err) {
-      const msg = err.response?.data?.message || 'Login failed';
-      setServerError(msg);
+      console.error("Login error:", err);
+      dispatch(showAlert({
+        message: 'Something went wrong. please try again.',
+        isError: true,
+      }));
     } finally {
       setLoading(false);
     }
@@ -70,7 +77,6 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {serverError && <p className="text-red-600 text-sm">{serverError}</p>}
 
       <div>
         <input

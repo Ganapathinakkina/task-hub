@@ -1,15 +1,17 @@
 'use client';
 
 import ProtectedRoute from '../../components/common/ProtectedRoute';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import DashboardLayout from './DashboardLayout';
 import { useEffect, useState } from 'react';
 import API from '../lib/axios';
 import AdminDashboard from './AdminDashboard';
 import ManagerDashboard from './ManagerDashboard';
 import EmployeeDashboard from './EmployeeDashboard';
+import { showAlert } from '../redux/slices/alertSlice';
 
 export default function Dashboard() {
+  const dispatch = useDispatch();
   const { user, token } = useSelector(state => state.auth);
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -43,12 +45,22 @@ export default function Dashboard() {
             Authorization: `Bearer ${token}`,
           },
         });
+
+        dispatch(showAlert({
+          message: res.data.message,
+          isError: res.data.isError,
+        }));
+
         const { data } = res.data;
         setDashboardData(data);
       }
 
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
+      dispatch(showAlert({
+        message: 'Something went wrong. please try again.',
+        isError: true,
+      }));
     }
     finally {
         setLoading(false);

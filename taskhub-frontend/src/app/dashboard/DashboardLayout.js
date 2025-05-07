@@ -5,7 +5,8 @@ import { useState } from 'react';
 import { cn } from '../lib/utils';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '@/app/redux/slices/authSlice';
-import { useRouter, usePathname } from 'next/navigation';
+import { showAlert } from '../redux/slices/alertSlice';
+import { usePathname } from 'next/navigation';
 
 
 const navItems = {
@@ -33,18 +34,17 @@ export default function DashboardLayout({ children }) {
   const name = user?.name?.split(' ')[0] || '';
 
   const dispatch = useDispatch();
-  const router = useRouter();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => setIsSidebarOpen(prev => !prev);
 
-
-
     const handleLogout = () => {
       dispatch(logout());
-      localStorage.removeItem('taskhub-auth');
-      router.push('/');
+      dispatch(showAlert({
+        message: 'Logged out successfully.',
+        isError: false,
+      }));
     };
   
 

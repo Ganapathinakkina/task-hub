@@ -1,13 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import axios from '../lib/axios';
 import ProtectedRoute from '../../components/common/ProtectedRoute';
 import DashboardLayout from '../dashboard/DashboardLayout';
 import UsersPage from '../users/UsersPage';
+import { showAlert } from '../redux/slices/alertSlice';
 
 export default function Tasks() {
+
+  const dispatch = useDispatch();
   const { user,token } = useSelector(state => state.auth);
   const role = user?.role || null;
 
@@ -68,6 +71,11 @@ export default function Tasks() {
         },
       });
 
+      dispatch(showAlert({
+        message: res.data.message,
+        isError: res.data.isError,
+      }));
+
       if (!res.data.isError) {
         setShowCreateModal(false);
         setNewTask({
@@ -77,14 +85,18 @@ export default function Tasks() {
           priority: 'Low',
           status: 'Pending',
         });
-        fetchTasks();
+        fetchTasks(true);
       }
     } catch (err) {
       console.error('Error creating task:', err);
+      dispatch(showAlert({
+        message: 'Something went wrong. please try again.',
+        isError: true,
+      }));
     }
   };
 
-  const fetchTasks = async () => {
+  const fetchTasks = async (isAfterTaskCreation=false) => {
     setLoading(true);
     try {
       const { page, limit, status, priority, dueDate, search } = filters;
@@ -102,6 +114,12 @@ export default function Tasks() {
         },
       });
 
+      !isAfterTaskCreation && 
+      dispatch(showAlert({
+        message: res.data.message,
+        isError: res.data.isError,
+      }));
+
       if (!res.data.isError) {
         setTasks(res.data.data.tasks);
         setPagination({
@@ -111,6 +129,10 @@ export default function Tasks() {
       }
     } catch (err) {
       console.error('Failed to fetch tasks:', err);
+      dispatch(showAlert({
+        message: 'Something went wrong. please try again.',
+        isError: true,
+      }));
     } finally {
       setLoading(false);
     }
@@ -156,12 +178,21 @@ export default function Tasks() {
           },
         }
       );
+
+      dispatch(showAlert({
+        message: res.data.message,
+        isError: res.data.isError,
+      }));
   
       if (!res.data.isError) {
         setShowEditModal(false);
       }
     } catch (err) {
       console.error('Error creating task:', err);
+      dispatch(showAlert({
+        message: 'Something went wrong. please try again.',
+        isError: true,
+      }));
     }
 
   };
@@ -171,14 +202,31 @@ export default function Tasks() {
     if (confirmDelete) {
       setTasks((prevTasks) => prevTasks.filter((task) => task._id !== taskId));
 
-      const res = await axios.delete(
-        `/auth/task/${taskId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      try
+      {
+        const res = await axios.delete(
+          `/auth/task/${taskId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        dispatch(showAlert({
+          message: res.data.message,
+          isError: res.data.isError,
+        }));
+
+      }
+      catch (err) {
+        console.error('Error deleting task:', err);
+        dispatch(showAlert({
+          message: 'Something went wrong. please try again.',
+          isError: true,
+        }));
+      }
+
 
     }
   };
@@ -186,8 +234,9 @@ export default function Tasks() {
 
 
   const handleStatusChange = async (taskId, newStatus) => {
-    try {
-      await axios.put(
+    try 
+    {
+      const res = await axios.put(
         `/auth/task/${taskId}`,
         { status: newStatus },
         {
@@ -197,6 +246,12 @@ export default function Tasks() {
           },
         }
       );
+
+      dispatch(showAlert({
+        message: res.data.message,
+        isError: res.data.isError,
+      }));
+
       setTasks((prev) =>
         prev.map((task) =>
           task._id === taskId ? { ...task, status: newStatus } : task
@@ -204,6 +259,10 @@ export default function Tasks() {
       );
     } catch (err) {
       console.error('Error updating status:', err);
+      dispatch(showAlert({
+        message: 'Something went wrong. please try again.',
+        isError: true,
+      }));
     }
   };
 

@@ -1,29 +1,29 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import axios from '../lib/axios';
+import { showAlert } from '../redux/slices/alertSlice';
 
 export default function UsersPage({ taskId = null, isPopup=true, setShowAssignModal = () => {} }) {
+
+  const dispatch = useDispatch();
   const { user, token } = useSelector((state) => state.auth);
   const role = user?.role || null;
-
   const [users, setUsers] = useState([]);
   const [filters, setFilters] = useState({
     page: 1,
     limit: 10,
     search: '',
   });
-
   const [userRoleFilter, setUserRoleFilter] = useState('employee');
-
-
   const [pagination, setPagination] = useState({
     totalPages: 1,
     currentPage: 1,
   });
-
   const [loading, setLoading] = useState(false);
+
+
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -40,6 +40,11 @@ export default function UsersPage({ taskId = null, isPopup=true, setShowAssignMo
         },
       });
 
+      dispatch(showAlert({
+        message: res.data.message,
+        isError: res.data.isError,
+      }));
+
       if (!res.data.isError) {
         setUsers(res.data.data.users);
         setPagination({
@@ -49,6 +54,10 @@ export default function UsersPage({ taskId = null, isPopup=true, setShowAssignMo
       }
     } catch (err) {
       console.error('Error fetching users:', err);
+      dispatch(showAlert({
+        message: 'Something went wrong. please try again.',
+        isError: true,
+      }));
     } finally {
       setLoading(false);
     }
@@ -60,10 +69,6 @@ export default function UsersPage({ taskId = null, isPopup=true, setShowAssignMo
 
   const handleSearchChange = (e) => {
     setFilters({ ...filters, search: e.target.value, page: 1 });
-  };
-
-  const handlePageChange = (newPage) => {
-    setFilters((prev) => ({ ...prev, page: newPage }));
   };
 
   const handleRoleChange = (e) => {
@@ -85,12 +90,21 @@ export default function UsersPage({ taskId = null, isPopup=true, setShowAssignMo
           },
         }
       );
+
+      dispatch(showAlert({
+        message: "Task Assigned Successfully.",
+        isError: res.data.isError,
+      }));
   
       if (!res.data.isError) {
         setShowAssignModal(false);
       }
     } catch (err) {
       console.error('Error While Assigning task:', err);
+      dispatch(showAlert({
+        message: 'Something went wrong. please try again.',
+        isError: true,
+      }));
     }
 
   };
