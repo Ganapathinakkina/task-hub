@@ -338,15 +338,19 @@ export default function Tasks() {
             )
           }
 
-          {/* Create Task Button */}
-          <div className="flex justify-end mb-4">
-            <button
-              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-              onClick={() => setShowCreateModal(true)}
-            >
-              Create Task
-            </button>
-          </div>
+          {
+            (role && (role === "admin" || role === "manager")) && (
+                <div className="flex justify-end mb-4">
+                  <button
+                    className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                    onClick={() => setShowCreateModal(true)}
+                  >
+                    Create Task
+                  </button>
+                </div>
+            )
+          }
+          
 
           {/* Filters */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
