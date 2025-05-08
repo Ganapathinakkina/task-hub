@@ -8,6 +8,9 @@ import DashboardLayout from '../dashboard/DashboardLayout';
 import UsersPage from '../users/UsersPage';
 import { showAlert } from '../redux/slices/alertSlice';
 import { logout } from '../redux/slices/authSlice';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
+
 
 export default function Tasks() {
 
@@ -377,11 +380,18 @@ export default function Tasks() {
               <option value={TASK_PRIORITY.HIGH}>High</option>
               <option value={TASK_PRIORITY.URGENT}>URGENT</option>
             </select>
-            <input
-              type="date"
-              name="dueDate"
-              value={filters.dueDate}
-              onChange={handleChange}
+            <DatePicker
+              selected={filters.dueDate ? new Date(filters.dueDate) : null}
+              placeholderText="Select Due Date"
+              dateFormat="yyyy-MM-dd"
+              onChange={(date) =>
+                handleChange({
+                  target: {
+                    name: "dueDate",
+                    value: date.toISOString().split("T")[0] + "T00:00:00.000Z",
+                  },
+                })
+              }
               className="p-2 border rounded-md w-full"
             />
           </div>
