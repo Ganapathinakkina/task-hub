@@ -43,10 +43,12 @@ A feature-rich Task Management System built for small teams to efficiently manag
 
 Role	Capabilities
 Admin	Full control: Manage users, assign roles, and oversee all tasks and teams.
-- email: admin@example.com & password: Admin@123
 Manager	Assign and update tasks, view team progress, and manage employees.
-- email: manager@mail.com & password: password
 Employee	View and update assigned tasks, mark tasks as completed.
+
+## Sample user cred in live system :
+- email: admin@example.com & password: Admin@123
+- email: manager@mail.com & password: password
 - email: employee3@mail.com & password: password
 
 #Note: Users can register themselves as Managers or Employee, but admin regsitration is not allowed as of per the present system design.
