@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import axios from 'axios';
+import axios from '../lib/axios';
 import { useDispatch } from 'react-redux';
 import { loginSuccess, logout } from '@/app/redux/slices/authSlice';
 import { useRouter } from 'next/navigation';
@@ -63,7 +63,7 @@ export default function RegisterForm() {
 
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/register', formData);
+      const res = await axios.post('/auth/register', formData);
       const { token, user } = res.data.data;
 
       dispatch(loginSuccess({ user, token }));
