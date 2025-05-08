@@ -38,8 +38,21 @@ A feature-rich Task Management System built for small teams to efficiently manag
   - Due Date (e.g., today, this week, overdue)
 
 ### ✅ Role-Based Access Control (RBAC)
-- Roles: `Admin`, `Manager`, `Employee`
+- Supports Three Roles: `Admin`, `Manager`, `Employee`
 - Only Admins/Managers can create and assign tasks.
+
+Role	Capabilities
+Admin	Full control: Manage users, assign roles, and oversee all tasks and teams.
+        email: admin@example.com
+        password: Admin@123
+Manager	Assign and update tasks, view team progress, and manage employees.
+        email: manager@mail.com
+        password: password
+Employee	View and update assigned tasks, mark tasks as completed.
+        email: employee3@mail.com
+        password: password
+
+#Note: Users can register themselves as Managers or Employee, but admin regsitration is not allowed as of per the present system design.
 
 ---
 
